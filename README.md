@@ -12,10 +12,18 @@ If you don't have an API key already
 ## lsFields
 This program will take the above input and produce a list of fields and field IDs used in your instance of Jira Cloud.  In our instance, we've added fields and the ID shows as _customfield\_00000_.  I'm positive that you'll want to change the fields I print in the report, since some of mine are custom.  Use this tool to list the fields in your instance and replace the fields that I use.
 
-## JiraReport
+## JiraReport2
 This is the one that does the work.  JiraReport will take the above inputs plus a JQL query to produce a report.  I use the Filters page in Jira Cloud to produce and test my queries as needed, then just paste JQL into the report.  Finally, it will ask for an output filename.  If you press enter, it will just use _jira_report.docx_.
 
 The report includes story keys that are hyperlinks back to the story in Jira Cloud.  The Assignee field also displays the persons name and is a hyperlink to their email address.
+
+### Jirastuff
+You can automate the answers to the report.  Create a file called jirastuff.py.  In the file, define four variables.  v1 is for your Jira URL, v2 is username, v3 is API Key, and v4 is the query you want to use.
+
+v1="https://me.atlassian.net"
+v2="me@example.com"
+v3="Replace with API Key"
+v4="type in (epic) and status not in (done, resolved, closed, canceled)"
 
 ### Help welcome
 This is a pretty simple project, but I don't do a lot of Python.  I'd welcome any suggestions.

@@ -11,21 +11,24 @@ import docx
 from docx.oxml.shared import OxmlElement
 from docx.oxml.ns import qn
 from datetime import date
+import markdown
+import jirastuff
+from html2docx import html2docx
 
 # Jira API base URL
 print("Your Jira Cloud URL should look something like yourcompany.atlassian.com")
-BASE_URL = input("Jira Cloud URL:")
+BASE_URL = input("Jira Cloud URL:") or jirastuff.v1
 BASE_URL = BASE_URL + "/rest/api/2"
 
 # Jira credentials
-USERNAME= input("Username: ")
+USERNAME= input("Username: ") or jirastuff.v2
 print("--------------------------------------------------------")
 print("Next you'll be asked for an API token.  If you don't have a token, here's how to set one up.")
 print("1. In Jira, click your picture in the upper right and choose _manage account_")
 print("2. In the profile page, choose the Security tab on the top.")
 print("3. Under Security, go to Create and manage API tokens")
 print("--------------------------------------------------------")
-API_TOKEN = input("Please enter your Jira API Token: ")
+API_TOKEN = input("Please enter your Jira API Token: ") or jirastuff.v3
 
 # Create a session with basic authentication
 session = requests.Session()
@@ -138,10 +141,14 @@ def generate_report(issues,docx_filename):
         hyperlink=add_hyperlink(p,weblink,issuetext,"FF8822",True)
         p=doc.add_paragraph(f"Updated: {issue['fields']['updated']} \t Assigned: ")
         hyperlink=add_hyperlink(p,maillink,mailtext,"FF8822",True)
-        try:
-            p=doc.add_paragraph(f"Latest Update: {issue['fields']['customfield_10078']}")
-        except:
-            p=doc.add_paragraph("No update")
+        #try:
+        markdown_text=f"{issue['fields']['customfield_10078']}"
+        html_content=markdown.markdown(markdown_text)
+        p=doc.add_paragraph(html2docx(html_content, doc))
+        #p=doc.add_paragraph(html_content)
+            #p=doc.add_paragraph(f"Latest Update: {issue['fields']['customfield_10078']}")
+        #except:
+            #p=doc.add_paragraph("No update")
         p.paragraph_format.left_indent=Inches(0.25)
         p=doc.add_paragraph("")
         insertHR(p)
@@ -154,7 +161,7 @@ def generate_report(issues,docx_filename):
 
 
 if __name__ == "__main__":
-    jql_query = input("Enter the JQL query for the report: ")
+    jql_query = input("Enter the JQL query for the report: ") or jirastuff.v4
     issues = get_issues(jql_query)
     filename=input("Filename for the report (jira_report.docx): ") or "jira_report.docx"
     generate_report(issues,filename)
